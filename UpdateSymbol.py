@@ -51,33 +51,36 @@ def main():
     # parse post params
     h = config['PostParams']['h']
     url = config['PostParams']['url']
-    app = TestApp()
+    for tmp in symbol.split('|'):
+        updatedata = []
+        print(tmp)
+        app = TestApp()
 
-    app.connect("127.0.0.1", 7496, 55)
-    time.sleep(5)
-    # define contract for EUR.USD forex pair
-    contract = Contract() 
-    contract.symbol = symbol
-    contract.secType = sectype
-    contract.exchange = exchange
-    contract.currency = currency
-    endtime = time.strftime('%Y%m%d %H:%M:%S')
-    print(endtime)
+        app.connect("127.0.0.1", 7496, 55)
+        time.sleep(5)
+        # define contract for EUR.USD forex pair
+        contract = Contract() 
+        contract.symbol = tmp.split(',')[0]
+        contract.secType = tmp.split(',')[1]
+        contract.exchange = tmp.split(',')[2]
+        contract.currency = currency
+        endtime = time.strftime('%Y%m%d %H:%M:%S')
+        print(endtime)
 
-    app.reqHistoricalData(1, contract, '', "2 D", "1 day", "MIDPOINT", 0, 1, False, [])
+        app.reqHistoricalData(1, contract, '', "2 D", "1 day", "MIDPOINT", 0, 1, False, [])
 
-    app.run()
-    change =  float(updatedata[0].split(',')[-1]) -float(updatedata[1].split(',')[-1])
-    change_percentage = (change/float(updatedata[1].split(',')[-1]))*100
-    updatedata_tmp = symbol + "," + updatedata[1] + "," + str(change) + "," + str(change_percentage)
-    post_data = {
-                'h': h, 
-                'symbol': updatedata_tmp
-                }
-    post_response = requests.post(url='https://my.aeromir.com/1/ibapi.cfm', data=post_data)
-    print("Sent Data")
-    print(updatedata_tmp)
-    print("Done",post_response)
+        app.run()
+        change =  float(updatedata[0].split(',')[-1]) -float(updatedata[1].split(',')[-1])
+        change_percentage = (change/float(updatedata[1].split(',')[-1]))*100
+        updatedata_tmp = tmp.split(',')[0] + "," + updatedata[1] + "," + str(change) + "," + str(change_percentage)
+        post_data = {
+                    'h': h, 
+                    'symbol': updatedata_tmp
+                    }
+        post_response = requests.post(url='https://my.aeromir.com/1/ibapi.cfm', data=post_data)
+        print("Sent Data")
+        print(updatedata_tmp)
+        print("Done",post_response)
 
 
 if __name__ == "__main__":
