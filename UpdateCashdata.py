@@ -17,9 +17,9 @@ class TestApp(EWrapper, EClient):
     def nextValidId(self, orderId:int):
         print("setting nextValidOrderId: %d", orderId)
         # here is where you start using api
-        self.reqAccountSummary(9002, "All", "NetLiquidation,FullInitMarginReq,FullAvailableFunds")    
+        self.reqAccountSummary(9002, "All", "NetLiquidation,FullInitMarginReq,TotalCashValue")    
     def accountSummary(self, reqId:int, account:str, tag:str, value:str, currency:str):
-        if tag == "FullAvailableFunds":
+        if tag == "FullInitMarginReq":
             accountdata[account] = ',' + str(value)
         else:
             accountdata[account] = accountdata[account]  + "," + str(value)

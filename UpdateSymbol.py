@@ -6,14 +6,14 @@ import configparser
 import requests
 
 
-updatedata = ''
+updatedata = []
 class TestApp(EWrapper, EClient):
     
     def __init__(self):
         EClient.__init__(self, self)
     def customdefinition(self, postdata):
         global updatedata
-        updatedata = postdata
+        updatedata.append(postdata)
         
     def error(self, reqId, errorCode, errorString):
         print("Error: ", reqId, " ", errorCode, " ", errorString)
@@ -64,17 +64,19 @@ def main():
     endtime = time.strftime('%Y%m%d %H:%M:%S')
     print(endtime)
 
-    app.reqHistoricalData(1, contract, '', "1 D", "1 min", "MIDPOINT", 0, 1, False, [])
+    app.reqHistoricalData(1, contract, '', "2 D", "1 day", "MIDPOINT", 0, 1, False, [])
 
     app.run()
-    updatedata = symbol + "," + updatedata
+    change =  float(updatedata[0].split(',')[-1]) -float(updatedata[1].split(',')[-1])
+    change_percentage = (change/float(updatedata[1].split(',')[-1]))*100
+    updatedata_tmp = symbol + "," + updatedata[1] + "," + str(change) + "," + str(change_percentage)
     post_data = {
                 'h': h, 
-                'symbol': updatedata
+                'symbol': updatedata_tmp
                 }
     post_response = requests.post(url='https://my.aeromir.com/1/ibapi.cfm', data=post_data)
     print("Sent Data")
-    print(updatedata)
+    print(updatedata_tmp)
     print("Done",post_response)
 
 
